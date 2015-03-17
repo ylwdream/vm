@@ -1,0 +1,62 @@
+/*
+ * =====================================================================================
+ *
+ *       Filename:  memlib.c
+ *
+ *    Description:  init-Mode
+ *
+ *        Version:  1.0
+ *        Created:  03/16/2015 04:22:39 AM
+ *       Revision:  none
+ *       Compiler:  gcc
+ *
+ *         Author:  WYL (502), ylwzzu@gmail.com
+ *   Organization:  
+ *
+ * =====================================================================================
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <string.h>
+#include <errno.h>
+
+#include "csapp.h"
+#include "memlib.h"
+#include "config.h"
+
+static char *mem_heap;	/* Point to first byte of heap */   
+static char *mem_brk;	/* Point to last byte of heap plus 1 */  
+static char *mem_max_addr;	/* Max legal heap addr plus 1 */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  mem_init
+ *  Description: Initialize the memory system model  
+ * =====================================================================================
+ */
+
+
+void mem_init(void )
+{
+	mem_heap = (char*)malloc(MAX_HEAP);
+	mem_brk = (char*)mem_heap;
+	mem_max_addr = (char*)(mem_heap + MAX_HEAP);
+	return;
+}		/* -----  end of function mem_init  ----- */
+/* 增加堆指针，返回增加后的新的地址*/
+void *mem_sbrk(int incr)
+{
+	char *old_brk = mem_brk;
+	if((incr < 0) || (mem_brk + incr) > mem_max_addr)
+	{
+		fprintf(stderr, "Error: mem_sbrk failed. Ran out of memory...\n");
+		return (void *)-1;
+	}
+	mem_brk += incr;
+	return (void *)old_brk;
+}
+
+
